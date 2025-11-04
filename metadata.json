@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Copy of Golden Gate University",
+  "description": "Golden Gate University: A comprehensive system for students, teachers, and administrators to manage registrations, exams, results, and curriculum. It features role-based access control and automates processes like roll number generation and form filling.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
