@@ -14,6 +14,7 @@
     "languages.bho": "भोजपुरी",
     
     "sidebar.dashboard": "tableau de bord",
+    "sidebar.campusPulse": "कैंपस पल्स",
     "sidebar.searchEngine": "खोज इंजन",
     "sidebar.messages": "संदेश",
     "sidebar.userManagement": "उपयोगकर्ता प्रबंधन",
@@ -21,13 +22,14 @@
     "sidebar.examManagement": "परीक्षा प्रबंधन",
     "sidebar.feeManagement": "शुल्क प्रबंधन",
     "sidebar.entranceResults": "प्रवेश परिणाम",
-    "sidebar.studentDatabase": "छात्र डेटाबेस",
+    "sidebar.studentTracking": "छात्र ट्रैकिंग",
     "sidebar.remoteSupport": "रिमोट सहायता",
     "sidebar.manageComplaints": "शिकायतें प्रबंधित करें",
     "sidebar.manageNotices": "नोटिस प्रबंधित करें",
     "sidebar.gallery": "गैलरी",
     "sidebar.universitySettings": "विश्वविद्यालय सेटिंग्स",
     "sidebar.adminProfile": "एडमिन प्रोफ़ाइल",
+    "sidebar.myProfile": "मेरी प्रोफ़ाइल",
     "sidebar.liveClass": "लाइव क्लास",
     "sidebar.takeAttendance": "उपस्थिति लें",
     "sidebar.enterMarks": "अंक दर्ज करें",
@@ -53,6 +55,13 @@
     "sidebar.manageExamApps": "परीक्षा ऐप्स प्रबंधित करें",
     "sidebar.feeCollection": "शुल्क संग्रह",
     "sidebar.manageProducts": "उत्पाद प्रबंधित करें",
+    "sidebar.academicCalendar": "शैक्षणिक कैलेंडर",
+    "sidebar.hostelManagement": "छात्रावास प्रबंधन",
+    "sidebar.myHostel": "मेरा छात्रावास",
+    "sidebar.projectWork": "परियोजना कार्य",
+    "sidebar.projectSubmissions": "परियोजना प्रस्तुतियाँ",
+    "sidebar.resourceCenter": "संसाधन केंद्र",
+    "sidebar.researchPortal": "अनुसंधान पोर्टल",
 
     "dashboard.admin.title": "एडमिन डैशबोर्ड",
     "dashboard.admin.welcome": "स्वागत है, एडमिन! विश्वविद्यालय का प्रबंधन करने के लिए साइडबार से एक विकल्प चुनें।",
@@ -63,5 +72,9 @@
     "dashboard.receptionist.title": "रिसेप्शनिस्ट डैशबोर्ड",
     "dashboard.receptionist.welcome": "स्वागत है! प्रवेश और आवेदनों का प्रबंधन करने के लिए साइडबार से एक विकल्प चुनें।",
     "dashboard.shopkeeper.title": "दुकानदार डैशबोर्ड",
-    "dashboard.shopkeeper.welcome": "स्वागत है! उत्पादों का प्रबंधन करें और साइडबार से ऑर्डर देखें।"
+    "dashboard.shopkeeper.welcome": "स्वागत है! उत्पादों का प्रबंधन करें और साइडबार से ऑर्डर देखें।",
+    "dashboard.examiner.title": "परीक्षक डैशबोर्ड",
+    "dashboard.examiner.welcome": "स्वागत है! आप परीक्षा प्रबंधन और परियोजना प्रस्तुतियाँ की समीक्षा कर सकते हैं।",
+    "dashboard.accounting.title": "लेखा डैशबोर्ड",
+    "dashboard.accounting.welcome": "स्वागत है! साइडबार से शुल्क संरचना और संग्रह प्रबंधित करें।"
 }

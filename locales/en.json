@@ -14,6 +14,7 @@
     "languages.bho": "Bhojpuri",
 
     "sidebar.dashboard": "Dashboard",
+    "sidebar.campusPulse": "Campus Pulse",
     "sidebar.searchEngine": "Search Engine",
     "sidebar.messages": "Messages",
     "sidebar.userManagement": "User Management",
@@ -21,13 +22,14 @@
     "sidebar.examManagement": "Exam Management",
     "sidebar.feeManagement": "Fee Management",
     "sidebar.entranceResults": "Entrance Results",
-    "sidebar.studentDatabase": "Student Database",
+    "sidebar.studentTracking": "Student Tracking",
     "sidebar.remoteSupport": "Remote Support",
     "sidebar.manageComplaints": "Manage Complaints",
     "sidebar.manageNotices": "Manage Notices",
     "sidebar.gallery": "Gallery",
     "sidebar.universitySettings": "University Settings",
     "sidebar.adminProfile": "Admin Profile",
+    "sidebar.myProfile": "My Profile",
     "sidebar.liveClass": "Live Class",
     "sidebar.takeAttendance": "Take Attendance",
     "sidebar.enterMarks": "Enter Marks",
@@ -53,6 +55,13 @@
     "sidebar.manageExamApps": "Manage Exam Apps",
     "sidebar.feeCollection": "Fee Collection",
     "sidebar.manageProducts": "Manage Products",
+    "sidebar.academicCalendar": "Academic Calendar",
+    "sidebar.hostelManagement": "Hostel Management",
+    "sidebar.myHostel": "My Hostel",
+    "sidebar.projectWork": "Project Work",
+    "sidebar.projectSubmissions": "Project Submissions",
+    "sidebar.resourceCenter": "Resource Center",
+    "sidebar.researchPortal": "Research Portal",
     
     "dashboard.admin.title": "Admin Dashboard",
     "dashboard.admin.welcome": "Welcome, Admin! Select an option from the sidebar to manage the university.",
@@ -63,5 +72,9 @@
     "dashboard.receptionist.title": "Receptionist Dashboard",
     "dashboard.receptionist.welcome": "Welcome! Select an option from the sidebar to manage admissions and applications.",
     "dashboard.shopkeeper.title": "Shopkeeper Dashboard",
-    "dashboard.shopkeeper.welcome": "Welcome! Manage products and view orders from the sidebar."
+    "dashboard.shopkeeper.welcome": "Welcome! Manage products and view orders from the sidebar.",
+    "dashboard.examiner.title": "Examiner Dashboard",
+    "dashboard.examiner.welcome": "Welcome! You can manage exams and review project submissions.",
+    "dashboard.accounting.title": "Accounting Dashboard",
+    "dashboard.accounting.welcome": "Welcome! Manage fee structures and collections from the sidebar."
 }

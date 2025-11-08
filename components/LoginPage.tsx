@@ -3,8 +3,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import CreateAccountPage from './CreateAccountPage';
+import ForgotPasswordPage from './ForgotPasswordPage';
 
-const LoginPage: React.FC = () => {
+const LoginPage: React.FC<{ onEnterPublicPortal: () => void }> = ({ onEnterPublicPortal }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -12,7 +13,7 @@ const LoginPage: React.FC = () => {
     const { login } = useAuth();
     const { universityInfo } = useData();
     const { t } = useLanguage();
-    const [view, setView] = useState<'login' | 'register'>('login');
+    const [view, setView] = useState<'login' | 'register' | 'forgot'>('login');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,76 +22,104 @@ const LoginPage: React.FC = () => {
         const success = await login(username, password);
         if (!success) {
             setError(t('loginPage.invalidCredentials'));
+            setIsLoading(false);
         }
-        setIsLoading(false);
     };
 
     if (view === 'register') {
         return <CreateAccountPage onBackToLogin={() => setView('login')} />;
     }
+    
+    if (view === 'forgot') {
+        return <ForgotPasswordPage onBackToLogin={() => setView('login')} />;
+    }
 
     return (
-        <div className="h-full flex items-center justify-center px-4">
-            <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 space-y-8">
+        <div className="h-full w-full flex items-center justify-center p-4">
+            <div className="w-full max-w-sm card p-8 space-y-6 animate-fade-in">
                 <div className="text-center">
-                    <img src={universityInfo.logo} alt="University Logo" className="mx-auto h-12 w-auto mb-4"/>
-                    <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
+                    <h2 className="text-3xl font-extrabold text-white">
                         {universityInfo.name}
                     </h2>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    <p className="mt-2 text-sm text-[var(--text-muted)]">
                         {t('loginPage.signInToYourAccount')}
                     </p>
                 </div>
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="rounded-md shadow-lg -space-y-px">
-                        <div>
-                            <input
-                                id="username"
-                                name="username"
-                                type="text"
-                                required
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 rounded-t-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                                placeholder={t('loginPage.username')}
-                            />
-                        </div>
-                        <div>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-white dark:bg-gray-700 rounded-b-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                                placeholder={t('loginPage.password')}
-                            />
-                        </div>
+                <form className="space-y-4" onSubmit={handleSubmit}>
+                    <div>
+                        <label htmlFor="username" className="sr-only">{t('loginPage.username')}</label>
+                        <input
+                            id="username"
+                            name="username"
+                            type="text"
+                            required
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            className="form-input"
+                            placeholder={t('loginPage.username')}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="password" className="sr-only">{t('loginPage.password')}</label>
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="form-input"
+                            placeholder={t('loginPage.password')}
+                        />
                     </div>
 
-                    {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+                    <div className="text-right text-sm">
+                        <button
+                            type="button"
+                            onClick={() => setView('forgot')}
+                            className="font-medium text-[var(--primary-400)] hover:text-[var(--primary-500)]"
+                        >
+                            Forgot your password?
+                        </button>
+                    </div>
+
+                    {error && <p className="text-red-400 text-sm text-center">{error}</p>}
 
                     <div>
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+                            className="btn-primary w-full"
                         >
                             {isLoading ? t('loginPage.signingIn') : t('loginPage.signIn')}
                         </button>
                     </div>
                 </form>
-                 <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+                 <p className="text-center text-sm text-[var(--text-muted)]">
                     Don't have an account?{' '}
                     <button
                         type="button"
                         onClick={() => setView('register')}
-                        className="font-medium text-indigo-600 hover:text-indigo-500"
+                        className="font-medium text-[var(--primary-400)] hover:text-[var(--primary-500)]"
                     >
                         Create one
                     </button>
                 </p>
+
+                <div className="relative flex py-2 items-center">
+                    <div className="flex-grow border-t border-gray-600"></div>
+                    <span className="flex-shrink mx-4 text-xs text-gray-400">OR</span>
+                    <div className="flex-grow border-t border-gray-600"></div>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={onEnterPublicPortal}
+                    className="btn-secondary w-full"
+                >
+                    Enter as Guest
+                </button>
+
             </div>
         </div>
     );

@@ -11,6 +11,11 @@ import SyllabusDesigner from '../teacher/SyllabusDesigner';
 import Gallery from '../common/Gallery';
 import OnlineClass from '../teacher/OnlineClass';
 import { useLanguage } from '../../contexts/LanguageContext';
+import CampusPulse from '../common/CampusPulse';
+import AcademicCalendar from '../common/AcademicCalendar';
+import ManageProjects from '../common/ManageProjects';
+import ResourceCenter from '../common/ResourceCenter';
+import UserProfile from '../common/UserProfile';
 
 
 const TeacherDashboard: React.FC = () => {
@@ -21,6 +26,8 @@ const TeacherDashboard: React.FC = () => {
         switch (activePage) {
             case 'dashboard':
                  return <div><h1 className="text-2xl font-bold mb-4">{t('dashboard.teacher.title')}</h1><p>{t('dashboard.teacher.welcome')}</p></div>;
+            case 'campus-pulse':
+                return <CampusPulse />;
             case 'chat':
                 return <Chat />;
             case 'online-class':
@@ -29,8 +36,14 @@ const TeacherDashboard: React.FC = () => {
                 return <TakeAttendance />;
             case 'marks':
                 return <EnterMarks />;
+            case 'project-submissions':
+                return <ManageProjects />;
             case 'syllabus-designer':
                 return <SyllabusDesigner />;
+            case 'resource-center':
+                return <ResourceCenter />;
+            case 'calendar':
+                return <AcademicCalendar />;
             case 'routines':
                 return <ViewRoutines />;
             case 'syllabus':
@@ -39,6 +52,8 @@ const TeacherDashboard: React.FC = () => {
                 return <Gallery />;
             case 'notices':
                 return <NoticeBoard />;
+            case 'profile':
+                return <UserProfile />;
             default:
                 return <div>Select a page</div>;
         }

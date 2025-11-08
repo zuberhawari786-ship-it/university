@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
 import Sidebar from '../Sidebar';
 import { UserRole } from '../../types';
+import FeeManagement from '../admin/FeeManagement';
+import FeeCollection from '../receptionist/FeeCollection';
 import Chat from '../common/Chat';
-import ManageProducts from '../shopkeeper/ManageProducts';
 import { useLanguage } from '../../contexts/LanguageContext';
-import CampusPulse from '../common/CampusPulse';
 import UserProfile from '../common/UserProfile';
 
-const ShopkeeperDashboard: React.FC = () => {
+const AccountingDashboard: React.FC = () => {
     const [activePage, setActivePage] = useState('dashboard');
     const { t } = useLanguage();
 
     const renderContent = () => {
         switch (activePage) {
             case 'dashboard':
-                return <div><h1 className="text-2xl font-bold mb-4">{t('dashboard.shopkeeper.title')}</h1><p>{t('dashboard.shopkeeper.welcome')}</p></div>;
-            case 'campus-pulse':
-                return <CampusPulse />;
-            case 'products':
-                return <ManageProducts />;
+                return <div><h1 className="text-2xl font-bold mb-4">{t('dashboard.accounting.title')}</h1><p>{t('dashboard.accounting.welcome')}</p></div>;
+            case 'fees':
+                return <FeeManagement />;
+            case 'fee-collection':
+                return <FeeCollection />;
             case 'chat':
                 return <Chat />;
             case 'profile':
@@ -30,7 +30,7 @@ const ShopkeeperDashboard: React.FC = () => {
 
     return (
         <div className="flex flex-1">
-            <Sidebar userRole={UserRole.SHOPKEEPER} activePage={activePage} setActivePage={setActivePage} />
+            <Sidebar userRole={UserRole.ACCOUNTING} activePage={activePage} setActivePage={setActivePage} />
             <main className="flex-1 p-6 overflow-y-auto">
                 {renderContent()}
             </main>
@@ -38,4 +38,4 @@ const ShopkeeperDashboard: React.FC = () => {
     );
 };
 
-export default ShopkeeperDashboard;
+export default AccountingDashboard;

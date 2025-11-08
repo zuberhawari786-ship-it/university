@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User, UserRole } from '../types';
 import { MOCK_USERS } from '../mockData';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 interface AuthContextType {
     user: User | null;
@@ -17,7 +18,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [users, setUsers] = useState<User[]>(MOCK_USERS);
+    const [users, setUsers] = useLocalStorage<User[]>('ggu-users', MOCK_USERS);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
      useEffect(() => {

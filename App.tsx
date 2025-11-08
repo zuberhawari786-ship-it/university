@@ -1,19 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DataProvider } from './contexts/DataContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import LoginPage from './components/LoginPage';
 import AdminDashboard from './components/dashboards/AdminDashboard';
 import TeacherDashboard from './components/dashboards/TeacherDashboard';
 import StudentDashboard from './components/dashboards/StudentDashboard';
 import ReceptionistDashboard from './components/dashboards/ReceptionistDashboard';
 import ShopkeeperDashboard from './components/dashboards/ShopkeeperDashboard';
+import ExaminerDashboard from './components/dashboards/ExaminerDashboard';
+import AccountingDashboard from './components/dashboards/AccountingDashboard';
+import ResearcherDashboard from './components/dashboards/ResearcherDashboard';
+import PublicPortal from './components/public/PublicPortal';
 import { UserRole } from './types';
 import Header from './components/Header';
-import AndroidEmulator from './components/common/AndroidEmulator';
+import { Theme } from './themes';
+
+const DynamicTheme: React.FC = () => {
+    const { theme } = useTheme();
+
+    const generateCssVariables = (theme: Theme) => {
+        return `
+      :root {
+        --primary-400: ${theme.primary400};
+        --primary-500: ${theme.primary500};
+        --accent-500: ${theme.accent500};
+        --card-bg: ${theme.cardBg};
+        --body-bg: ${theme.bodyBg};
+        --text-main: ${theme.textMain};
+        --text-muted: ${theme.textMuted};
+        --border-color: ${theme.borderColor};
+        --accent-shadow-color: ${theme.accentShadowColor};
+        --primary-shadow-color: ${theme.primaryShadowColor};
+        --btn-primary-text: ${theme.btnPrimaryText};
+        --input-bg: ${theme.inputBg};
+        --input-bg-focus: ${theme.inputBgFocus};
+        --form-section-bg: ${theme.formSectionBg};
+      }
+    `;
+    };
+
+    return <style>{generateCssVariables(theme)}</style>;
+};
+
 
 const AppContent: React.FC = () => {
     const { isAuthenticated, user } = useAuth();
+    const [isPublicView, setIsPublicView] = useState(false);
 
     const renderDashboard = () => {
         switch (user?.role) {
@@ -27,22 +61,30 @@ const AppContent: React.FC = () => {
                 return <ReceptionistDashboard />;
             case UserRole.SHOPKEEPER:
                 return <ShopkeeperDashboard />;
+            case UserRole.EXAMINER:
+                return <ExaminerDashboard />;
+            case UserRole.ACCOUNTING:
+                return <AccountingDashboard />;
+            case UserRole.RESEARCHER:
+                return <ResearcherDashboard />;
             default:
-                return <LoginPage />;
+                return <LoginPage onEnterPublicPortal={() => setIsPublicView(true)} />;
         }
     };
 
+    if (isPublicView) {
+        return <PublicPortal onExit={() => setIsPublicView(false)} />;
+    }
+
     if (!isAuthenticated) {
-        return <LoginPage />;
+        return <LoginPage onEnterPublicPortal={() => setIsPublicView(true)} />;
     }
 
     return (
-        <div className="flex h-full bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-            <div className="flex flex-col flex-1 w-full">
-                <Header />
-                <div className="flex flex-1 overflow-hidden">
-                    {renderDashboard()}
-                </div>
+        <div className="app-container">
+            <Header />
+            <div className="flex flex-1 overflow-hidden">
+                {renderDashboard()}
             </div>
         </div>
     );
@@ -54,9 +96,10 @@ const App: React.FC = () => {
         <AuthProvider>
             <LanguageProvider>
                 <DataProvider>
-                    <AndroidEmulator>
+                    <ThemeProvider>
+                        <DynamicTheme />
                         <AppContent />
-                    </AndroidEmulator>
+                    </ThemeProvider>
                 </DataProvider>
             </LanguageProvider>
         </AuthProvider>

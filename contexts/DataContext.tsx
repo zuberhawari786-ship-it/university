@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { UniversityInfo, Course, Student, Exam, Result, Notice, AttendanceRecord, ExamApplication, EntranceApplication, ApplicationStatus, User, FeeStructure, FeePayment, Subject, SyllabusMaterial, ChatThread, ChatMessage, GalleryImage, ShopProduct, OnlineClass, Complaint, ComplaintStatus, StudentDetails } from '../types';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { UniversityInfo, Course, Student, Exam, Result, Notice, AttendanceRecord, ExamApplication, EntranceApplication, ApplicationStatus, User, FeeStructure, FeePayment, Subject, SyllabusMaterial, ChatThread, ChatMessage, GalleryImage, ShopProduct, OnlineClass, Complaint, ComplaintStatus, StudentDetails, CampusPost, Comment, UserRole, AcademicEvent, Hostel, Room, HostelBooking, ProjectSubmission, Resource } from '../types';
 import { DEFAULT_UNIVERSITY_INFO } from '../constants';
-import { MOCK_COURSES, MOCK_STUDENTS, MOCK_EXAMS, MOCK_RESULTS, MOCK_NOTICES, MOCK_ATTENDANCE, MOCK_EXAM_APPLICATIONS, MOCK_ENTRANCE_APPLICATIONS, MOCK_FEE_STRUCTURES, MOCK_FEE_PAYMENTS, MOCK_CHAT_THREADS, MOCK_CHAT_MESSAGES, MOCK_GALLERY_IMAGES, MOCK_SHOP_PRODUCTS, MOCK_ONLINE_CLASSES, MOCK_COMPLAINTS } from '../mockData';
+import { MOCK_COURSES, MOCK_STUDENTS, MOCK_EXAMS, MOCK_RESULTS, MOCK_NOTICES, MOCK_ATTENDANCE, MOCK_EXAM_APPLICATIONS, MOCK_ENTRANCE_APPLICATIONS, MOCK_FEE_STRUCTURES, MOCK_FEE_PAYMENTS, MOCK_CHAT_THREADS, MOCK_CHAT_MESSAGES, MOCK_GALLERY_IMAGES, MOCK_SHOP_PRODUCTS, MOCK_ONLINE_CLASSES, MOCK_COMPLAINTS, MOCK_CAMPUS_POSTS, MOCK_ACADEMIC_EVENTS, MOCK_HOSTELS, MOCK_ROOMS, MOCK_HOSTEL_BOOKINGS, MOCK_PROJECT_SUBMISSIONS, MOCK_RESOURCES } from '../mockData';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 interface DataContextType {
     universityInfo: UniversityInfo;
@@ -15,6 +16,7 @@ interface DataContextType {
     students: Student[];
     getStudentByRegNo: (regNo: string) => Student | undefined;
     updateStudentRegistration: (studentId: string, data: Partial<Student>) => void;
+    updateStudentProfileByAdmin: (studentId: string, updates: { name: string; details: StudentDetails; newRoomId: string | null; }) => { success: boolean, message: string };
     addStudentProfile: (user: User, contactInfo: { type: 'mobile' | 'email'; value: string }) => void;
     deleteStudentData: (studentId: string) => void;
     exams: Exam[];
@@ -60,28 +62,56 @@ interface DataContextType {
     complaints: Complaint[];
     addComplaint: (complaintData: Omit<Complaint, 'id' | 'status' | 'date'>) => void;
     updateComplaint: (complaintId: string, updates: Partial<Complaint>) => void;
+    campusPosts: CampusPost[];
+    addCampusPost: (postData: Omit<CampusPost, 'id' | 'timestamp' | 'likes' | 'comments'>) => void;
+    deleteCampusPost: (postId: string) => void;
+    toggleLikePost: (postId: string, userId: string) => void;
+    addCommentToPost: (postId: string, commentData: Omit<Comment, 'id' | 'timestamp'>) => void;
+    academicEvents: AcademicEvent[];
+    addAcademicEvent: (event: Omit<AcademicEvent, 'id'>) => void;
+    deleteAcademicEvent: (eventId: string) => void;
+    hostels: Hostel[];
+    addHostel: (name: string) => void;
+    rooms: Room[];
+    addRoomToHostel: (hostelId: string, roomNumber: string, capacity: number) => void;
+    hostelBookings: HostelBooking[];
+    bookRoomForStudent: (studentId: string, roomId: string) => { success: boolean, message: string };
+    cancelBooking: (studentId: string) => void;
+    projectSubmissions: ProjectSubmission[];
+    addProjectSubmission: (submission: Omit<ProjectSubmission, 'id' | 'submissionDate'>) => void;
+    gradeProjectSubmission: (submissionId: string, grade: string, feedback: string) => void;
+    resources: Resource[];
+    addResource: (resourceData: Omit<Resource, 'id' | 'uploadDate'>) => void;
+    deleteResource: (resourceId: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [universityInfo, setUniversityInfo] = useState<UniversityInfo>(DEFAULT_UNIVERSITY_INFO);
-    const [courses, setCourses] = useState<Course[]>(MOCK_COURSES);
-    const [students, setStudents] = useState<Student[]>(MOCK_STUDENTS);
-    const [exams, setExams] = useState<Exam[]>(MOCK_EXAMS);
-    const [results, setResults] = useState<Result[]>(MOCK_RESULTS);
-    const [notices, setNotices] = useState<Notice[]>(MOCK_NOTICES);
-    const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>(MOCK_ATTENDANCE);
-    const [examApplications, setExamApplications] = useState<ExamApplication[]>(MOCK_EXAM_APPLICATIONS);
-    const [entranceApplications, setEntranceApplications] = useState<EntranceApplication[]>(MOCK_ENTRANCE_APPLICATIONS);
-    const [feeStructures, setFeeStructures] = useState<FeeStructure[]>(MOCK_FEE_STRUCTURES);
-    const [feePayments, setFeePayments] = useState<FeePayment[]>(MOCK_FEE_PAYMENTS);
-    const [chatThreads, setChatThreads] = useState<ChatThread[]>(MOCK_CHAT_THREADS);
-    const [chatMessages, setChatMessages] = useState<ChatMessage[]>(MOCK_CHAT_MESSAGES);
-    const [galleryImages, setGalleryImages] = useState<GalleryImage[]>(MOCK_GALLERY_IMAGES);
-    const [shopProducts, setShopProducts] = useState<ShopProduct[]>(MOCK_SHOP_PRODUCTS);
-    const [onlineClasses, setOnlineClasses] = useState<OnlineClass[]>(MOCK_ONLINE_CLASSES);
-    const [complaints, setComplaints] = useState<Complaint[]>(MOCK_COMPLAINTS);
+    const [universityInfo, setUniversityInfo] = useLocalStorage<UniversityInfo>('ggu-universityInfo', DEFAULT_UNIVERSITY_INFO);
+    const [courses, setCourses] = useLocalStorage<Course[]>('ggu-courses', MOCK_COURSES);
+    const [students, setStudents] = useLocalStorage<Student[]>('ggu-students', MOCK_STUDENTS);
+    const [exams, setExams] = useLocalStorage<Exam[]>('ggu-exams', MOCK_EXAMS);
+    const [results, setResults] = useLocalStorage<Result[]>('ggu-results', MOCK_RESULTS);
+    const [notices, setNotices] = useLocalStorage<Notice[]>('ggu-notices', MOCK_NOTICES);
+    const [attendanceRecords, setAttendanceRecords] = useLocalStorage<AttendanceRecord[]>('ggu-attendance', MOCK_ATTENDANCE);
+    const [examApplications, setExamApplications] = useLocalStorage<ExamApplication[]>('ggu-examApplications', MOCK_EXAM_APPLICATIONS);
+    const [entranceApplications, setEntranceApplications] = useLocalStorage<EntranceApplication[]>('ggu-entranceApplications', MOCK_ENTRANCE_APPLICATIONS);
+    const [feeStructures, setFeeStructures] = useLocalStorage<FeeStructure[]>('ggu-feeStructures', MOCK_FEE_STRUCTURES);
+    const [feePayments, setFeePayments] = useLocalStorage<FeePayment[]>('ggu-feePayments', MOCK_FEE_PAYMENTS);
+    const [chatThreads, setChatThreads] = useLocalStorage<ChatThread[]>('ggu-chatThreads', MOCK_CHAT_THREADS);
+    const [chatMessages, setChatMessages] = useLocalStorage<ChatMessage[]>('ggu-chatMessages', MOCK_CHAT_MESSAGES);
+    const [galleryImages, setGalleryImages] = useLocalStorage<GalleryImage[]>('ggu-galleryImages', MOCK_GALLERY_IMAGES);
+    const [shopProducts, setShopProducts] = useLocalStorage<ShopProduct[]>('ggu-shopProducts', MOCK_SHOP_PRODUCTS);
+    const [onlineClasses, setOnlineClasses] = useLocalStorage<OnlineClass[]>('ggu-onlineClasses', MOCK_ONLINE_CLASSES);
+    const [complaints, setComplaints] = useLocalStorage<Complaint[]>('ggu-complaints', MOCK_COMPLAINTS);
+    const [campusPosts, setCampusPosts] = useLocalStorage<CampusPost[]>('ggu-campusPosts', MOCK_CAMPUS_POSTS);
+    const [academicEvents, setAcademicEvents] = useLocalStorage<AcademicEvent[]>('ggu-academicEvents', MOCK_ACADEMIC_EVENTS);
+    const [hostels, setHostels] = useLocalStorage<Hostel[]>('ggu-hostels', MOCK_HOSTELS);
+    const [rooms, setRooms] = useLocalStorage<Room[]>('ggu-rooms', MOCK_ROOMS);
+    const [hostelBookings, setHostelBookings] = useLocalStorage<HostelBooking[]>('ggu-hostelBookings', MOCK_HOSTEL_BOOKINGS);
+    const [projectSubmissions, setProjectSubmissions] = useLocalStorage<ProjectSubmission[]>('ggu-projectSubmissions', MOCK_PROJECT_SUBMISSIONS);
+    const [resources, setResources] = useLocalStorage<Resource[]>('ggu-resources', MOCK_RESOURCES);
 
     const updateUniversityInfo = (info: UniversityInfo) => setUniversityInfo(info);
     const addCourse = (course: Omit<Course, 'id'>) => setCourses(prev => [...prev, { ...course, id: `course-${Date.now()}` }]);
@@ -121,6 +151,66 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const updateStudentRegistration = (studentId: string, data: Partial<Student>) => {
         setStudents(prev => prev.map(s => s.id === studentId ? { ...s, ...data, isRegistered: true } : s));
     };
+     const updateStudentProfileByAdmin = (studentId: string, updates: { name: string; details: StudentDetails; newRoomId: string | null; }): { success: boolean, message: string } => {
+        let message = "Profile updated successfully.";
+        let success = true;
+
+        const studentToUpdate = students.find(s => s.id === studentId);
+        if (!studentToUpdate) return { success: false, message: "Student not found." };
+        if (!studentToUpdate.details) return { success: false, message: "Student details not found." };
+
+
+        const roomChanged = (studentToUpdate.hostelInfo?.roomId || null) !== updates.newRoomId;
+
+        // Handle hostel logic first without setting state
+        let tempHostelInfo = studentToUpdate.hostelInfo;
+        if (roomChanged) {
+            if (updates.newRoomId) { // moving to a new room
+                const room = rooms.find(r => r.id === updates.newRoomId);
+                if (!room) return { success: false, message: "Selected room not found."};
+                
+                // Check room capacity only if moving to a *different* room
+                const occupants = hostelBookings.filter(b => b.roomId === updates.newRoomId).length;
+                if (occupants >= room.capacity && studentToUpdate.hostelInfo?.roomId !== updates.newRoomId) {
+                        return { success: false, message: "The selected new room is already full." };
+                }
+                tempHostelInfo = { hostelId: room.hostelId, roomId: room.id, roomNumber: room.roomNumber };
+                message += " Hostel assignment updated.";
+            } else { // moving out of a room
+                tempHostelInfo = null;
+                message += " Hostel assignment removed.";
+            }
+        }
+
+        // Now update everything in one go
+        setStudents(prev => prev.map(s => {
+            if (s.id === studentId) {
+                return {
+                    ...s,
+                    name: updates.name,
+                    details: updates.details,
+                    hostelInfo: tempHostelInfo
+                };
+            }
+            return s;
+        }));
+
+        // Update bookings state
+        if (roomChanged) {
+            setHostelBookings(prev => {
+                // Remove old booking
+                const withoutOld = prev.filter(b => b.studentId !== studentId);
+                // Add new booking if applicable
+                if (updates.newRoomId) {
+                    return [...withoutOld, { id: `booking-${Date.now()}`, studentId, roomId: updates.newRoomId }];
+                }
+                return withoutOld;
+            });
+        }
+
+        return { success, message };
+    };
+
     const addStudentProfile = (user: User, contactInfo: { type: 'mobile' | 'email'; value: string }) => {
         const newStudentDetails: StudentDetails = {
             contact: contactInfo.type === 'mobile' ? contactInfo.value : '',
@@ -138,9 +228,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             isRegistered: false,
             registrationNumber: null,
             rollNumber: null,
-            photo: 'https://via.placeholder.com/150',
+            photo: 'https://i.pravatar.cc/150?u=a' + Date.now(),
             signature: 'https://via.placeholder.com/150x50/FFFFFF/000000?text=Signature',
             details: newStudentDetails,
+            hostelInfo: null,
         };
         setStudents(prev => [...prev, newStudent]);
     }
@@ -345,10 +436,125 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setComplaints(prev => prev.map(c => c.id === complaintId ? { ...c, ...updates } : c));
     };
 
+    const addCampusPost = (postData: Omit<CampusPost, 'id' | 'timestamp' | 'likes' | 'comments'>) => {
+        const newPost: CampusPost = {
+            ...postData,
+            id: `post-${Date.now()}`,
+            timestamp: new Date().toISOString(),
+            likes: [],
+            comments: [],
+        };
+        setCampusPosts(prev => [newPost, ...prev]);
+    };
+
+    const deleteCampusPost = (postId: string) => {
+        setCampusPosts(prev => prev.filter(p => p.id !== postId));
+    };
+
+    const toggleLikePost = (postId: string, userId: string) => {
+        setCampusPosts(prev => prev.map(post => {
+            if (post.id === postId) {
+                const liked = post.likes.includes(userId);
+                const newLikes = liked ? post.likes.filter(id => id !== userId) : [...post.likes, userId];
+                return { ...post, likes: newLikes };
+            }
+            return post;
+        }));
+    };
+
+    const addCommentToPost = (postId: string, commentData: Omit<Comment, 'id' | 'timestamp'>) => {
+        const newComment: Comment = {
+            ...commentData,
+            id: `comment-${Date.now()}`,
+            timestamp: new Date().toISOString(),
+        };
+        setCampusPosts(prev => prev.map(post => {
+            if (post.id === postId) {
+                return { ...post, comments: [...post.comments, newComment] };
+            }
+            return post;
+        }));
+    };
+
+    const addAcademicEvent = (event: Omit<AcademicEvent, 'id'>) => {
+        const newEvent = { ...event, id: `event-${Date.now()}` };
+        setAcademicEvents(prev => [...prev, newEvent].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+    };
+
+    const deleteAcademicEvent = (eventId: string) => {
+        setAcademicEvents(prev => prev.filter(e => e.id !== eventId));
+    };
+
+    const addHostel = (name: string) => {
+        const newHostel = { id: `hostel-${Date.now()}`, name };
+        setHostels(prev => [...prev, newHostel]);
+    };
+
+    const addRoomToHostel = (hostelId: string, roomNumber: string, capacity: number) => {
+        const newRoom = { id: `room-${Date.now()}`, hostelId, roomNumber, capacity };
+        setRooms(prev => [...prev, newRoom]);
+    };
+
+    const bookRoomForStudent = (studentId: string, roomId: string): { success: boolean, message: string } => {
+        const student = students.find(s => s.id === studentId);
+        const room = rooms.find(r => r.id === roomId);
+
+        if (!student || !room) {
+            return { success: false, message: 'Student or Room not found.' };
+        }
+        if (student.hostelInfo) {
+            return { success: false, message: 'Student is already in a room. Cancel previous booking first.' };
+        }
+        
+        const occupants = hostelBookings.filter(b => b.roomId === roomId).length;
+        if (occupants >= room.capacity) {
+            return { success: false, message: 'This room is already full.' };
+        }
+
+        const newBooking = { id: `booking-${Date.now()}`, studentId, roomId };
+        setHostelBookings(prev => [...prev, newBooking]);
+        setStudents(prev => prev.map(s => s.id === studentId ? { ...s, hostelInfo: { hostelId: room.hostelId, roomId: room.id, roomNumber: room.roomNumber } } : s));
+        
+        return { success: true, message: `Successfully booked ${student.name} into room ${room.roomNumber}.` };
+    };
+    
+    const cancelBooking = (studentId: string) => {
+        setHostelBookings(prev => prev.filter(b => b.studentId !== studentId));
+        setStudents(prev => prev.map(s => s.id === studentId ? { ...s, hostelInfo: null } : s));
+    };
+
+    const addProjectSubmission = (submission: Omit<ProjectSubmission, 'id' | 'submissionDate'>) => {
+        const newSubmission: ProjectSubmission = {
+            ...submission,
+            id: `proj-${Date.now()}`,
+            submissionDate: new Date().toISOString(),
+        };
+        setProjectSubmissions(prev => [newSubmission, ...prev]);
+    };
+
+    const gradeProjectSubmission = (submissionId: string, grade: string, feedback: string) => {
+        setProjectSubmissions(prev => prev.map(sub => 
+            sub.id === submissionId ? { ...sub, grade, feedback } : sub
+        ));
+    };
+
+    const addResource = (resourceData: Omit<Resource, 'id' | 'uploadDate'>) => {
+        const newResource: Resource = {
+            ...resourceData,
+            id: `res-${Date.now()}`,
+            uploadDate: new Date().toISOString(),
+        };
+        setResources(prev => [newResource, ...prev]);
+    };
+
+    const deleteResource = (resourceId: string) => {
+        setResources(prev => prev.filter(r => r.id !== resourceId));
+    };
+
     return (
         <DataContext.Provider value={{
             universityInfo, updateUniversityInfo, courses, addCourse, deleteCourse, addSubjectToCourse, deleteSubjectFromCourse, updateSubjectSyllabus, students, getStudentByRegNo,
-            updateStudentRegistration, addStudentProfile, deleteStudentData, exams, addExam, deleteExam, results, addResult, updateResult,
+            updateStudentRegistration, addStudentProfile, deleteStudentData, updateStudentProfileByAdmin, exams, addExam, deleteExam, results, addResult, updateResult,
             toggleResultEdit, notices, addNotice, deleteNotice, attendanceRecords, addAttendanceRecord, examApplications, addExamApplication, updateExamApplicationStatus,
             entranceApplications, addEntranceApplication, updateEntranceApplicationStatus, updateEntranceApplicationResult,
             feeStructures, addFeeStructure, deleteFeeStructure, feePayments, addFeePayment,
@@ -356,7 +562,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             galleryImages, addGalleryImage, deleteGalleryImage,
             shopProducts, addShopProduct, updateShopProduct, deleteShopProduct,
             onlineClasses, startClass, endClass, updateWhiteboardState, updateDocContent,
-            complaints, addComplaint, updateComplaint
+            complaints, addComplaint, updateComplaint,
+            campusPosts, addCampusPost, deleteCampusPost, toggleLikePost, addCommentToPost,
+            academicEvents, addAcademicEvent, deleteAcademicEvent,
+            hostels, addHostel, rooms, addRoomToHostel, hostelBookings, bookRoomForStudent, cancelBooking,
+            projectSubmissions, addProjectSubmission, gradeProjectSubmission,
+            resources, addResource, deleteResource
         }}>
             {children}
         </DataContext.Provider>

@@ -1,41 +1,32 @@
 import React, { useState } from 'react';
 import Sidebar from '../Sidebar';
 import { UserRole } from '../../types';
-import AdmissionForm from '../receptionist/AdmissionForm';
-import NoticeBoard from '../common/NoticeBoard';
-import EntranceForm from '../receptionist/EntranceForm';
-import ManageSubmissions from '../admin/ManageSubmissions';
-import FeeCollection from '../receptionist/FeeCollection';
 import Chat from '../common/Chat';
 import Gallery from '../common/Gallery';
-import { useLanguage } from '../../contexts/LanguageContext';
 import CampusPulse from '../common/CampusPulse';
 import AcademicCalendar from '../common/AcademicCalendar';
-import HostelManagement from '../admin/HostelManagement';
+import NoticeBoard from '../common/NoticeBoard';
+import ResourceCenter from '../common/ResourceCenter';
+import ResearchPortal from '../researcher/ResearchPortal';
+import { useLanguage } from '../../contexts/LanguageContext';
 import UserProfile from '../common/UserProfile';
 
-const ReceptionistDashboard: React.FC = () => {
+const ResearcherDashboard: React.FC = () => {
     const [activePage, setActivePage] = useState('dashboard');
     const { t } = useLanguage();
 
     const renderContent = () => {
         switch (activePage) {
             case 'dashboard':
-                return <div><h1 className="text-2xl font-bold mb-4">{t('dashboard.receptionist.title')}</h1><p>{t('dashboard.receptionist.welcome')}</p></div>;
+                return <div><h1 className="text-2xl font-bold mb-4">Researcher Dashboard</h1><p>Welcome, Researcher! Access research tools and resources from the sidebar.</p></div>;
+            case 'research-portal':
+                return <ResearchPortal />;
+            case 'resource-center':
+                return <ResourceCenter />;
             case 'campus-pulse':
                 return <CampusPulse />;
             case 'chat':
                 return <Chat />;
-            case 'admission':
-                return <AdmissionForm />;
-            case 'entrance':
-                return <EntranceForm />;
-            case 'exam-applications':
-                return <ManageSubmissions />;
-            case 'fee-collection':
-                return <FeeCollection />;
-            case 'hostel':
-                return <HostelManagement />;
             case 'calendar':
                 return <AcademicCalendar />;
             case 'gallery':
@@ -51,7 +42,7 @@ const ReceptionistDashboard: React.FC = () => {
 
     return (
         <div className="flex flex-1">
-            <Sidebar userRole={UserRole.RECEPTIONIST} activePage={activePage} setActivePage={setActivePage} />
+            <Sidebar userRole={UserRole.RESEARCHER} activePage={activePage} setActivePage={setActivePage} />
             <main className="flex-1 p-6 overflow-y-auto">
                 {renderContent()}
             </main>
@@ -59,4 +50,4 @@ const ReceptionistDashboard: React.FC = () => {
     );
 };
 
-export default ReceptionistDashboard;
+export default ResearcherDashboard;

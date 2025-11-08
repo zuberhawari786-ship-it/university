@@ -2,8 +2,8 @@ import React from 'react';
 import { Result, Exam, Student } from '../../types';
 
 const PrintableResultCard: React.FC<{ result: Result; exam?: Exam; student?: Student }> = ({ result, exam, student }) => {
-    // FIX: Explicitly type accumulator and value in reduce to prevent arithmetic errors on `unknown` type.
-    const totalMarks = Object.values(result.marks).reduce((sum: number, mark: any) => sum + (Number(mark) || 0), 0);
+    // FIX: Explicitly typed the accumulator and value in reduce to resolve arithmetic operation error.
+    const totalMarks = Object.values(result.marks).reduce((sum: number, mark: number) => sum + (mark || 0), 0);
     const maxMarks = Object.keys(result.marks).length * 100;
     const percentage = maxMarks > 0 ? ((totalMarks / maxMarks) * 100).toFixed(2) : 0;
 

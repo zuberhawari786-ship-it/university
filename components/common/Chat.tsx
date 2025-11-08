@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../contexts/DataContext';
 import { ChatThread, User } from '../../types';
+import CallModal from './CallModal';
 
 const NewChatModal: React.FC<{
     onClose: () => void;
@@ -11,17 +12,17 @@ const NewChatModal: React.FC<{
     const otherUsers = users.filter(u => u.id !== user?.id);
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div className="card p-6 w-full max-w-md">
                 <h3 className="text-xl font-bold mb-4">Start a New Conversation</h3>
                 <div className="max-h-80 overflow-y-auto">
                     {otherUsers.map(u => (
                         <div key={u.id}
                             onClick={() => onStartChat(u.id)}
-                            className="p-3 flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md cursor-pointer"
+                            className="p-3 flex justify-between items-center hover:bg-[rgba(0,191,255,0.1)] rounded-md cursor-pointer"
                         >
                             <span>{u.name} ({u.role})</span>
-                            <span className="text-xs bg-indigo-100 text-indigo-800 p-1 rounded">Chat</span>
+                            <span className="text-xs btn-secondary btn-sm">Chat</span>
                         </div>
                     ))}
                 </div>
@@ -40,6 +41,11 @@ const Chat: React.FC = () => {
     const [newMessage, setNewMessage] = useState('');
     const [showNewChatModal, setShowNewChatModal] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    
+    // Calling state
+    const [callState, setCallState] = useState<'idle' | 'calling' | 'incoming' | 'active'>('idle');
+    const [callTarget, setCallTarget] = useState<{ id: string, name: string} | null>(null);
+    const [callType, setCallType] = useState<'video' | 'voice'>('voice');
 
     const userThreads = useMemo(() => {
         return chatThreads.filter(t => t.participantIds.includes(user?.id || ''));
@@ -78,18 +84,62 @@ const Chat: React.FC = () => {
         setShowNewChatModal(false);
     };
     
-    const getOtherParticipantName = (thread: ChatThread) => {
+    const getOtherParticipant = (thread: ChatThread | undefined) => {
+        if (!thread) return null;
         const otherId = thread.participantIds.find(id => id !== user?.id);
-        return thread.participantNames[otherId || ''] || 'Unknown User';
+        const otherName = thread.participantNames[otherId || ''] || 'Unknown User';
+        return { id: otherId || '', name: otherName };
     };
+    
+    // --- Calling Logic ---
+    const handleInitiateCall = (type: 'video' | 'voice') => {
+        const currentThread = userThreads.find(t => t.id === selectedThreadId);
+        const target = getOtherParticipant(currentThread);
+        if (target) {
+            setCallTarget(target);
+            setCallType(type);
+            setCallState('calling');
+            // Simulate incoming call for the other user
+            setTimeout(() => {
+                // In a real app, this would be a push notification/websocket event
+                // For this demo, we can just imagine the other user gets this prompt
+                console.log(`Simulating incoming ${type} call for ${target.name}`);
+            }, 500);
+        }
+    };
+
+    const handleCallAction = (action: 'accept' | 'decline' | 'hangup') => {
+        switch (action) {
+            case 'accept':
+                setCallState('active');
+                break;
+            case 'decline':
+            case 'hangup':
+                setCallState('idle');
+                setCallTarget(null);
+                break;
+        }
+    };
+    // --- End Calling Logic ---
+
+    const currentThread = userThreads.find(t => t.id === selectedThreadId);
+    const otherParticipant = getOtherParticipant(currentThread);
 
     return (
         <>
             {showNewChatModal && <NewChatModal onClose={() => setShowNewChatModal(false)} onStartChat={handleStartNewChat}/>}
-            <div className="flex h-[calc(100vh-100px)] bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+            {callState !== 'idle' && callTarget && (
+                <CallModal 
+                    callState={callState}
+                    callTarget={callTarget}
+                    callType={callType}
+                    onAction={handleCallAction}
+                />
+            )}
+            <div className="flex h-[calc(100vh-100px)] card overflow-hidden">
                 {/* Thread List Panel */}
-                <div className="w-1/3 border-r dark:border-gray-700 flex flex-col">
-                    <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
+                <div className="w-1/3 border-r dark:border-[var(--border-color)] flex flex-col">
+                    <div className="p-4 border-b dark:border-[var(--border-color)] flex justify-between items-center">
                         <h2 className="text-xl font-bold">Messages</h2>
                         <button onClick={() => setShowNewChatModal(true)} className="btn-primary btn-sm">New Chat</button>
                     </div>
@@ -97,10 +147,10 @@ const Chat: React.FC = () => {
                         {userThreads.map(thread => (
                             <div key={thread.id}
                                  onClick={() => setSelectedThreadId(thread.id)}
-                                 className={`p-4 cursor-pointer border-l-4 ${selectedThreadId === thread.id ? 'border-indigo-500 bg-gray-100 dark:bg-gray-900' : 'border-transparent hover:bg-gray-50 dark:hover:bg-gray-700/50'}`}
+                                 className={`p-4 cursor-pointer border-l-4 ${selectedThreadId === thread.id ? 'border-[var(--primary-400)] bg-[rgba(0,191,255,0.1)]' : 'border-transparent hover:bg-[rgba(0,191,255,0.05)]'}`}
                             >
-                                <h3 className="font-semibold">{getOtherParticipantName(thread)}</h3>
-                                <p className="text-sm text-gray-500 truncate">{thread.lastMessage?.content || 'No messages yet'}</p>
+                                <h3 className="font-semibold">{getOtherParticipant(thread)?.name}</h3>
+                                <p className="text-sm text-[var(--text-muted)] truncate">{thread.lastMessage?.content || 'No messages yet'}</p>
                             </div>
                         ))}
                     </div>
@@ -108,15 +158,23 @@ const Chat: React.FC = () => {
 
                 {/* Message Panel */}
                 <div className="w-2/3 flex flex-col">
-                    {selectedThreadId ? (
+                    {selectedThreadId && otherParticipant ? (
                         <>
-                            <div className="p-4 border-b dark:border-gray-700">
-                                <h3 className="text-lg font-bold">{getOtherParticipantName(userThreads.find(t=>t.id === selectedThreadId)!)}</h3>
+                            <div className="p-4 border-b dark:border-[var(--border-color)] flex justify-between items-center">
+                                <h3 className="text-lg font-bold">{otherParticipant.name}</h3>
+                                <div className="flex items-center gap-3">
+                                    <button onClick={() => handleInitiateCall('voice')} aria-label="Start voice call" className="text-gray-400 hover:text-white transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                                    </button>
+                                     <button onClick={() => handleInitiateCall('video')} aria-label="Start video call" className="text-gray-400 hover:text-white transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                                    </button>
+                                </div>
                             </div>
-                            <div className="flex-1 p-4 overflow-y-auto bg-gray-50 dark:bg-gray-900/50">
+                            <div className="flex-1 p-4 overflow-y-auto bg-[rgba(0,0,0,0.2)]">
                                 {messagesForThread.map(msg => (
                                     <div key={msg.id} className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'} mb-4`}>
-                                        <div className={`max-w-md p-3 rounded-lg ${msg.senderId === user?.id ? 'bg-indigo-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'}`}>
+                                        <div className={`max-w-md p-3 rounded-lg shadow-md ${msg.senderId === user?.id ? 'bg-gradient-to-br from-cyan-500 to-blue-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
                                             <p className="font-bold text-sm">{msg.senderId !== user?.id ? msg.senderName : ''}</p>
                                             <p>{msg.content}</p>
                                             <p className="text-xs text-right opacity-75 mt-1">{new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
@@ -125,7 +183,7 @@ const Chat: React.FC = () => {
                                 ))}
                                 <div ref={messagesEndRef} />
                             </div>
-                            <div className="p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700">
+                            <div className="p-4 border-t dark:border-[var(--border-color)]">
                                 <form onSubmit={handleSendMessage} className="flex gap-2">
                                     <input
                                         type="text"
@@ -139,7 +197,7 @@ const Chat: React.FC = () => {
                             </div>
                         </>
                     ) : (
-                        <div className="flex-1 flex items-center justify-center text-gray-500">
+                        <div className="flex-1 flex items-center justify-center text-[var(--text-muted)]">
                             <p>Select a conversation or start a new one.</p>
                         </div>
                     )}

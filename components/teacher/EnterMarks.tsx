@@ -60,8 +60,8 @@ const EnterMarks: React.FC = () => {
             const existingApplication = entranceApplications.find(app => app.id === entityId);
             const finalMarks = { ...existingApplication?.marks, ...applicantMarks };
 
-            // FIX: Explicitly type accumulator and value in reduce to prevent arithmetic errors on `unknown` type.
-            const totalMarks = Object.values(finalMarks).reduce((sum: number, mark: any) => sum + (Number(mark) || 0), 0);
+            // FIX: Explicitly typed the accumulator and value in reduce to resolve arithmetic operation error.
+            const totalMarks = Object.values(finalMarks).reduce((sum: number, mark: number) => sum + (mark || 0), 0);
             const average = selectedExam.subjects.length > 0 ? totalMarks / selectedExam.subjects.length : 0;
             const grade = getGrade(average);
 
@@ -77,8 +77,8 @@ const EnterMarks: React.FC = () => {
                 setFeedback('Warning: Not all subject marks are entered. Submitting partial result.');
             }
             
-            // FIX: Explicitly type accumulator and value in reduce to prevent arithmetic errors on `unknown` type.
-            const totalMarks = Object.values(finalMarks).reduce((sum: number, mark: any) => sum + (Number(mark) || 0), 0);
+            // FIX: Explicitly typed the accumulator and value in reduce to resolve arithmetic operation error.
+            const totalMarks = Object.values(finalMarks).reduce((sum: number, mark: number) => sum + (mark || 0), 0);
             const average = selectedExam.subjects.length > 0 ? totalMarks / selectedExam.subjects.length : 0;
             const grade = getGrade(average);
 

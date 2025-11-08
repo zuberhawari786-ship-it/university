@@ -18,6 +18,12 @@ import JoinClass from '../student/JoinClass';
 import ComplaintBox from '../student/ComplaintBox';
 import { useLanguage } from '../../contexts/LanguageContext';
 import TVApp from '../common/TVApp';
+import CampusPulse from '../common/CampusPulse';
+import AcademicCalendar from '../common/AcademicCalendar';
+import MyHostel from '../student/MyHostel';
+import ProjectSubmission from '../student/ProjectSubmission';
+import ResourceCenter from '../common/ResourceCenter';
+import UserProfile from '../common/UserProfile';
 
 const StudentDashboard: React.FC = () => {
     const [activePage, setActivePage] = useState('dashboard');
@@ -27,6 +33,8 @@ const StudentDashboard: React.FC = () => {
         switch (activePage) {
             case 'dashboard':
                 return <div><h1 className="text-2xl font-bold mb-4">{t('dashboard.student.title')}</h1><p>{t('dashboard.student.welcome')}</p></div>;
+            case 'campus-pulse':
+                return <CampusPulse />;
             case 'chat':
                 return <Chat />;
             case 'join-class':
@@ -35,6 +43,14 @@ const StudentDashboard: React.FC = () => {
                 return <StudentRegistration setActivePage={setActivePage} />;
             case 'id-card':
                 return <IdCard />;
+            case 'my-hostel':
+                return <MyHostel />;
+            case 'calendar':
+                return <AcademicCalendar />;
+            case 'project-work':
+                return <ProjectSubmission />;
+            case 'resource-center':
+                return <ResourceCenter />;
             case 'routines':
                 return <ViewRoutines />;
             case 'syllabus':
@@ -59,6 +75,8 @@ const StudentDashboard: React.FC = () => {
                 return <Gallery />;
             case 'notices':
                 return <NoticeBoard />;
+            case 'profile':
+                return <UserProfile />;
             default:
                 return <div>Select a page</div>;
         }

@@ -7,6 +7,9 @@ export enum UserRole {
     STUDENT = 'Student',
     RECEPTIONIST = 'Receptionist',
     SHOPKEEPER = 'Shopkeeper',
+    EXAMINER = 'Examiner',
+    ACCOUNTING = 'Accounting',
+    RESEARCHER = 'Researcher',
 }
 
 export interface User {
@@ -70,6 +73,11 @@ export interface Student extends User {
     photo: string;
     signature: string;
     details: StudentDetails | null;
+    hostelInfo: {
+        hostelId: string;
+        roomId: string;
+        roomNumber: string;
+    } | null;
 }
 
 export enum ExamType {
@@ -249,4 +257,87 @@ export interface Complaint {
     date: string; // ISO string
     status: ComplaintStatus;
     response?: string;
+}
+
+export interface Comment {
+    id: string;
+    authorId: string;
+    authorName: string;
+    timestamp: string;
+    content: string;
+}
+
+export interface CampusPost {
+    id: string;
+    authorId: string;
+    authorName: string;
+    authorRole: UserRole;
+    timestamp: string;
+    textContent: string;
+    mediaType?: 'image' | 'video' | 'document';
+    mediaUrl?: string;
+    mediaName?: string;
+    likes: string[]; // Array of user IDs
+    comments: Comment[];
+}
+
+export interface AcademicEvent {
+    id: string;
+    date: string; // ISO string for AD date
+    title: string;
+    description: string;
+    category: 'Holiday' | 'Exam' | 'Event' | 'Deadline';
+}
+
+export interface Hostel {
+    id: string;
+    name: string;
+}
+
+export interface Room {
+    id: string;
+    hostelId: string;
+    roomNumber: string;
+    capacity: number;
+}
+
+export interface HostelBooking {
+    id: string;
+    studentId: string;
+    roomId: string;
+}
+
+export interface ProjectSubmission {
+    id: string;
+    studentId: string;
+    studentName: string;
+    courseId: string;
+    subject: string;
+    title: string;
+    description: string;
+    fileUrl: string; // base64
+    fileName: string;
+    submissionDate: string; // ISO string
+    grade?: string;
+    feedback?: string;
+}
+
+export enum ResourceCategory {
+    RESEARCH_PAPER = 'Research Paper',
+    E_BOOK = 'E-Book',
+    JOURNAL = 'Journal',
+    ARTICLE = 'Article',
+    OTHER = 'Other',
+}
+
+export interface Resource {
+    id: string;
+    title: string;
+    authorId: string;
+    authorName: string;
+    uploadDate: string; // ISO string
+    category: ResourceCategory;
+    description: string;
+    fileUrl: string; // base64
+    fileName: string;
 }

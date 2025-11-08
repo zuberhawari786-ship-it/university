@@ -1,8 +1,8 @@
-import { User, UserRole, Course, Student, Exam, ExamType, Result, Notice, AttendanceRecord, ExamApplication, EntranceApplication, ApplicationStatus, FeeStructure, FeePayment, Subject, ChatMessage, ChatThread, GalleryImage, ShopProduct, ShopCategory, OnlineClass, Complaint } from './types';
+import { User, UserRole, Course, Student, Exam, ExamType, Result, Notice, AttendanceRecord, ExamApplication, EntranceApplication, ApplicationStatus, FeeStructure, FeePayment, Subject, ChatMessage, ChatThread, GalleryImage, ShopProduct, ShopCategory, OnlineClass, Complaint, CampusPost, Comment, AcademicEvent, Hostel, Room, HostelBooking, ProjectSubmission, Resource, ResourceCategory } from './types';
 
 export const MOCK_USERS: User[] = [
     { id: 'user-1', name: 'Admin User', username: 'admin', password: 'admin001', role: UserRole.ADMIN },
-    { id: 'user-2', name: 'Teacher User', username: 'teacher', password: 'password', role: UserRole.TEACHER, subjects: ['Introduction to AI', 'Calculus I', 'General Aptitude'] },
+    { id: 'user-2', name: 'Teacher User', username: 'teacher', password: 'password', role: UserRole.TEACHER, subjects: ['Introduction to AI', 'Calculus I', 'General Aptitude', 'Programming Fundamentals'] },
     { id: 'user-3', name: 'Alice Smith', username: 'alice', password: 'password', role: UserRole.STUDENT },
     { id: 'user-4', name: 'Receptionist User', username: 'reception', password: 'password', role: UserRole.RECEPTIONIST },
     { id: 'user-5', name: 'Bob Johnson', username: 'bob', password: 'password', role: UserRole.STUDENT },
@@ -11,6 +11,9 @@ export const MOCK_USERS: User[] = [
     { id: 'user-8', name: 'Ram Bahadur', username: 'ram', password: 'ram', role: UserRole.STUDENT },
     { id: 'user-9', name: 'Shopkeeper User', username: 'shop', password: 'password', role: UserRole.SHOPKEEPER },
     { id: 'user-10', name: 'Dewa Shopkeeper', username: 'dewa', password: 'dewa', role: UserRole.SHOPKEEPER },
+    { id: 'user-11', name: 'Examiner King', username: 'user-king', password: 'king001', role: UserRole.EXAMINER },
+    { id: 'user-12', name: 'BPC Accounting', username: 'user-bpc', password: 'bpc001', role: UserRole.ACCOUNTING },
+    { id: 'user-13', name: 'Dr. Evelyn Reed', username: 'researcher', password: 'password', role: UserRole.RESEARCHER },
 ];
 
 const BSAI_SUBJECTS: Subject[] = [
@@ -66,6 +69,11 @@ export const MOCK_STUDENTS: Student[] = [
             courseId: 'course-1',
             citizenshipDoc: '',
             currentSemester: 1,
+        },
+        hostelInfo: {
+            hostelId: 'hostel-2',
+            roomId: 'room-201',
+            roomNumber: 'A-101'
         }
     },
     { 
@@ -79,6 +87,7 @@ export const MOCK_STUDENTS: Student[] = [
         photo: 'https://i.pravatar.cc/150?u=bob',
         signature: 'https://via.placeholder.com/150x50/FFFFFF/000000?text=Bob+Johnson',
         details: null,
+        hostelInfo: null
     },
     { 
         id: 'user-8', 
@@ -91,6 +100,7 @@ export const MOCK_STUDENTS: Student[] = [
         photo: 'https://i.pravatar.cc/150?u=ram',
         signature: 'https://via.placeholder.com/150x50/FFFFFF/000000?text=Ram+Bahadur',
         details: null,
+        hostelInfo: null
     },
 ];
 
@@ -192,3 +202,119 @@ export const MOCK_SHOP_PRODUCTS: ShopProduct[] = [
 export const MOCK_ONLINE_CLASSES: OnlineClass[] = [];
 
 export const MOCK_COMPLAINTS: Complaint[] = [];
+
+const MOCK_COMMENTS: Comment[] = [
+    { id: 'comment-1', authorId: 'user-2', authorName: 'Teacher User', timestamp: new Date(Date.now() - 1000 * 60 * 8).toISOString(), content: 'Great question! We will cover this in detail during our next lecture.'},
+];
+
+export const MOCK_CAMPUS_POSTS: CampusPost[] = [
+    {
+        id: 'post-1',
+        authorId: 'user-3',
+        authorName: 'Alice Smith',
+        authorRole: UserRole.STUDENT,
+        timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
+        textContent: "Just finished my first AI project! It's been a challenging but rewarding experience. Can't wait for the next assignment. #AI #StudentLife",
+        likes: ['user-2', 'user-5'],
+        comments: MOCK_COMMENTS,
+    },
+    {
+        id: 'post-2',
+        authorId: 'user-1',
+        authorName: 'Admin User',
+        authorRole: UserRole.ADMIN,
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+        textContent: "Reminder: The deadline for mid-term exam applications is this Friday. Please submit your forms via the student portal.",
+        mediaType: 'image',
+        mediaUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAiIGhlaWdodD0iNDAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNDYzQjdCIiAvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMzIiIGZpbGw9IiNGRkYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ERUFETElORSAgQUxFUlQ8L3RleHQ+PC9zdmc+',
+        likes: ['user-3', 'user-5', 'user-8'],
+        comments: [],
+    },
+    {
+        id: 'post-3',
+        authorId: 'user-6',
+        authorName: 'dipesh',
+        authorRole: UserRole.TEACHER,
+        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+        textContent: "For all Digital Media students, here is the project brief for your final assignment. Please review it carefully.",
+        mediaType: 'document',
+        mediaUrl: '#',
+        mediaName: 'Final_Project_Brief.pdf',
+        likes: [],
+        comments: [],
+    }
+];
+
+export const MOCK_ACADEMIC_EVENTS: AcademicEvent[] = [
+    { id: 'event-1', date: new Date(new Date().getFullYear(), new Date().getMonth(), 15).toISOString(), title: 'Mid-Term Exams Begin', description: 'Mid-term examinations for all faculties will commence.', category: 'Exam'},
+    { id: 'event-2', date: new Date(new Date().getFullYear(), new Date().getMonth(), 25).toISOString(), title: 'Annual Tech Fest "Innovate"', description: 'Join us for the annual technology festival.', category: 'Event'},
+    { id: 'event-3', date: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString(), title: 'Semester Break', description: 'The university will be closed for the semester break.', category: 'Holiday'}
+];
+
+export const MOCK_HOSTELS: Hostel[] = [
+    { id: 'hostel-1', name: 'Boys Hostel A' },
+    { id: 'hostel-2', name: 'Girls Hostel B' },
+];
+
+export const MOCK_ROOMS: Room[] = [
+    { id: 'room-101', hostelId: 'hostel-1', roomNumber: 'A-101', capacity: 2 },
+    { id: 'room-102', hostelId: 'hostel-1', roomNumber: 'A-102', capacity: 2 },
+    { id: 'room-201', hostelId: 'hostel-2', roomNumber: 'B-101', capacity: 2 },
+];
+
+export const MOCK_HOSTEL_BOOKINGS: HostelBooking[] = [
+    { id: 'booking-1', studentId: 'user-3', roomId: 'room-201' },
+];
+
+export const MOCK_PROJECT_SUBMISSIONS: ProjectSubmission[] = [
+    {
+        id: 'proj-1',
+        studentId: 'user-3',
+        studentName: 'Alice Smith',
+        courseId: 'course-1',
+        subject: 'Introduction to AI',
+        title: 'Neural Network From Scratch',
+        description: 'Implementation of a basic neural network in Python.',
+        fileUrl: '',
+        fileName: 'NN_Project.zip',
+        submissionDate: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+        grade: 'A',
+        feedback: 'Excellent work! The implementation is clean and the report is well-written.'
+    }
+];
+
+export const MOCK_RESOURCES: Resource[] = [
+    {
+        id: 'res-1',
+        title: 'The Unreasonable Effectiveness of Recurrent Neural Networks',
+        authorId: 'user-13',
+        authorName: 'Dr. Evelyn Reed',
+        uploadDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
+        category: ResourceCategory.RESEARCH_PAPER,
+        description: 'A seminal paper on the power of RNNs in sequence modeling.',
+        fileUrl: '#',
+        fileName: 'rnn_effectiveness.pdf',
+    },
+    {
+        id: 'res-2',
+        title: 'Artificial Intelligence: A Modern Approach',
+        authorId: 'user-1',
+        authorName: 'Admin User',
+        uploadDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
+        category: ResourceCategory.E_BOOK,
+        description: 'The leading textbook in Artificial Intelligence.',
+        fileUrl: '#',
+        fileName: 'a-modern-approach.pdf',
+    },
+    {
+        id: 'res-3',
+        title: 'Attention Is All You Need',
+        authorId: 'user-13',
+        authorName: 'Dr. Evelyn Reed',
+        uploadDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+        category: ResourceCategory.RESEARCH_PAPER,
+        description: 'The original paper introducing the Transformer architecture.',
+        fileUrl: '#',
+        fileName: 'attention_is_all_you_need.pdf',
+    }
+];
